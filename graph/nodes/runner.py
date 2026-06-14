@@ -7,7 +7,7 @@ from config import GENERATED_TESTS_DIR
 from graph.state import QAState
 
 
-def test_runner(state: QAState) -> dict:
+def runner(state: QAState) -> dict:
     if state.get("error"):
         return {}
 

@@ -18,7 +18,7 @@ class GeneratedTests(BaseModel):
     files: list[GeneratedTestFile]
 
 
-def test_generator(state: QAState) -> dict:
+def generator(state: QAState) -> dict:
     if state.get("error"):
         return {}
 
@@ -43,6 +43,8 @@ Rules:
 - Only import: requests, pytest (no other third-party libraries)
 - Group tests by resource tag into one file per resource (posts, users, todos, comments)
 - Filename format: test_<resource>.py
+- Never use pytest.mark.xfail, pytest.mark.skip, or pytest.mark.skipif — every test must assert a definitive expected status code
+- A 500 response in the spec means assert response.status_code == 500, not an xfail marker
 """
 
     try:

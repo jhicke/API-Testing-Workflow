@@ -4,11 +4,11 @@ from langgraph.graph import END, StateGraph
 from config import MAX_RETRIES
 from graph.nodes.failure_analyzer import failure_analyzer
 from graph.nodes.fix_suggester import fix_suggester
+from graph.nodes.generator import generator
+from graph.nodes.planner import planner
 from graph.nodes.report_writer import report_writer
+from graph.nodes.runner import runner
 from graph.nodes.spec_parser import spec_parser
-from graph.nodes.test_generator import test_generator
-from graph.nodes.test_planner import test_planner
-from graph.nodes.test_runner import test_runner
 from graph.state import QAState
 
 
@@ -35,9 +35,9 @@ def build_graph(review_mode: bool = False):
 
     # Register every node
     builder.add_node("spec_parser", spec_parser)
-    builder.add_node("test_planner", test_planner)
-    builder.add_node("test_generator", test_generator)
-    builder.add_node("test_runner", test_runner)
+    builder.add_node("test_planner", planner)
+    builder.add_node("test_generator", generator)
+    builder.add_node("test_runner", runner)
     builder.add_node("failure_analyzer", failure_analyzer)
     builder.add_node("fix_suggester", fix_suggester)
     builder.add_node("report_writer", report_writer)

@@ -1,13 +1,11 @@
-tests/test_*.py
-tests/__init__.py
-tests/.cache.json
-tests/pytest_report.json
+generated/
 testplan/
 reports/
 __pycache__/
 *.pyc
 .pytest_cache/
 .env
+Learning_Notes.md
 *.egg-info/
 .venv/
 venv/

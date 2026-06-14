@@ -36,7 +36,7 @@ def _write_plan_to_run_dir(plan: list, run_id: str) -> None:
     (run_dir / "test_plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
 
 
-def test_planner(state: QAState) -> dict:
+def planner(state: QAState) -> dict:
     if state.get("error"):
         return {}
 

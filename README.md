@@ -56,7 +56,7 @@ reports/run_<timestamp>/
     report.json   # structured output for CI / dashboards
 ```
 
-Generated test files live in `tests/`. On every run, the spec file is hashed — if the hash matches the previous run, test generation is skipped entirely and the existing files are reused. If the spec changed, new tests are generated and the old files are overwritten.
+Generated test files live in `generated/`. On every run, the spec file is hashed — if the hash matches the previous run, test generation is skipped entirely and the existing files are reused. If the spec changed, new tests are generated and the old files are overwritten.
 
 ---
 
@@ -113,14 +113,14 @@ graph/
     graph_builder.py        LangGraph wiring — nodes, edges, routing functions
     nodes/
         spec_parser.py      Parse OpenAPI spec, resolve $ref pointers, check cache
-        test_planner.py     Claude generates structured test plan
-        test_generator.py   Claude writes pytest files from the plan
-        test_runner.py      Runs pytest subprocess, parses JSON report
+        planner.py          Claude generates structured test plan
+        generator.py        Claude writes pytest files from the plan
+        runner.py           Runs pytest subprocess, parses JSON report
         failure_analyzer.py Claude classifies each failure
         fix_suggester.py    Claude rewrites broken test files
         report_writer.py    Writes report.md and report.json
 
-tests/                      Generated test files (gitignored)
+generated/                  Generated test files (gitignored)
 reports/                    Run reports (gitignored)
 ```
 
