@@ -51,6 +51,9 @@ def test_runner(state: QAState) -> dict:
     report = json.loads(json_report_path.read_text(encoding="utf-8"))
     summary = report.get("summary", {})
 
+    # Preserve classifications from previous failure_analyzer runs
+    prev_failure_map = {f["test_name"]: f for f in state.get("failures", [])}
+
     all_tests = []
     failures = []
 
@@ -68,9 +71,12 @@ def test_runner(state: QAState) -> dict:
         })
 
         if outcome in ("failed", "error"):
+            prev = prev_failure_map.get(test["nodeid"], {})
             failures.append({
                 "test_name": test["nodeid"],
-                "failure_type": None,
+                "failure_type": prev.get("failure_type"),
+                "reason": prev.get("reason", ""),
+                "suggested_fix": prev.get("suggested_fix", ""),
                 "message": call.get("longrepr") or setup.get("longrepr", ""),
                 "longrepr": call.get("longrepr") or setup.get("longrepr", ""),
                 "file_path": test["nodeid"].split("::")[0],

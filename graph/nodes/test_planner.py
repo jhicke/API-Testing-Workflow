@@ -4,8 +4,17 @@ from typing import Literal
 from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel
 
-from config import BASE_API_URL, MODEL_NAME
+from config import BASE_API_URL, MODEL_NAME, REPORTS_DIR, TESTPLAN_DIR
 from graph.state import QAState
+
+PLAN_CACHE_FILE = TESTPLAN_DIR / ".cache.json"
+PLAN_FILE = TESTPLAN_DIR / "test_plan.json"
+
+
+def _load_plan_cache() -> dict:
+    if PLAN_CACHE_FILE.exists():
+        return json.loads(PLAN_CACHE_FILE.read_text(encoding="utf-8"))
+    return {}
 
 
 class TestCase(BaseModel):
@@ -21,9 +30,26 @@ class TestPlan(BaseModel):
     cases: list[TestCase]
 
 
+def _write_plan_to_run_dir(plan: list, run_id: str) -> None:
+    run_dir = REPORTS_DIR / f"run_{run_id}"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "test_plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+
 def test_planner(state: QAState) -> dict:
     if state.get("error"):
         return {}
+
+    spec_hash = state.get("spec_hash", "")
+
+    # Cache hit — reuse existing test plan if spec hasn't changed
+    if spec_hash:
+        cache = _load_plan_cache()
+        if spec_hash in cache and PLAN_FILE.exists():
+            plan = json.loads(PLAN_FILE.read_text(encoding="utf-8"))
+            print(f"  (plan cache hit — reusing existing test plan in {TESTPLAN_DIR})")
+            _write_plan_to_run_dir(plan, state["run_id"])
+            return {"plan": plan}
 
     llm = ChatAnthropic(model=MODEL_NAME, temperature=0)
     structured_llm = llm.with_structured_output(TestPlan)
@@ -68,6 +94,17 @@ Rules:
 
     try:
         result = structured_llm.invoke(prompt)
-        return {"plan": [case.model_dump() for case in result.cases]}
+        plan = [case.model_dump() for case in result.cases]
+
+        # Save to cache
+        TESTPLAN_DIR.mkdir(parents=True, exist_ok=True)
+        PLAN_FILE.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+        if spec_hash:
+            cache = _load_plan_cache()
+            cache[spec_hash] = state["run_id"]
+            PLAN_CACHE_FILE.write_text(json.dumps(cache, indent=2), encoding="utf-8")
+
+        _write_plan_to_run_dir(plan, state["run_id"])
+        return {"plan": plan}
     except Exception as e:
         return {"error": f"test_planner failed: {e}"}
