@@ -39,7 +39,7 @@ Rules:
 - Each test function must be completely standalone — no shared fixtures or conftest.py
 - Function names: test_<method>_<resource>_<scenario>  e.g. test_get_post_happy_path
 - Always assert BOTH the status code AND at least one field in the response body
-- For 404 tests use ID 99999
+- For 404 tests use the invalid ID from the test plan's test_data (e.g. the id field); if not specified fall back to 99999
 - Only import: requests, pytest (no other third-party libraries)
 - Group tests by resource tag into one file per resource (posts, users, todos, comments)
 - Filename format: test_<resource>.py

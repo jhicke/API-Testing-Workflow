@@ -63,21 +63,21 @@ Generated test files live in `generated/`. On every run, the spec file is hashed
 ## How it works
 
 ```
-spec_parser       reads and parses the OpenAPI spec file
-    → test_planner    asks Claude to create a structured test plan
-    → test_generator  asks Claude to write pytest files from the plan
-    → test_runner     runs pytest as a subprocess, captures results
+spec_parser    reads and parses the OpenAPI spec file
+    → planner      asks Claude to create a structured test plan
+    → generator    asks Claude to write pytest files from the plan
+    → runner       runs pytest as a subprocess, captures results
         → (failures)  failure_analyzer  classifies each failure:
                                         test_bug / spec_bug / backend_bug
                       fix_suggester     rewrites failing test files (test_bugs only)
-                      test_runner       re-runs — up to 3 retries
+                      runner            re-runs — up to 3 retries
         → (passing)   report_writer     writes report.md and report.json
 ```
 
 The self-healing loop retries up to `MAX_RETRIES` times (default 3). Only `test_bug` failures are auto-fixed — `spec_bug` and `backend_bug` are reported as findings.
 
 Graph 
- spec_parser ──→ test_planner ──→ test_generator ──→ test_runner
+ spec_parser ──→ planner ──→ generator ──→ runner
                                                          │
                                                     any failures?
                                                     ┌────┴─────┐

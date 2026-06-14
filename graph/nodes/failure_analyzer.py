@@ -5,7 +5,7 @@ from typing import Literal
 from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel
 
-from config import MODEL_NAME
+from config import MAX_TOKENS, MODEL_NAME
 from graph.state import QAState
 
 
@@ -24,7 +24,7 @@ def failure_analyzer(state: QAState) -> dict:
     if state.get("error") or not state.get("failures"):
         return {}
 
-    llm = ChatAnthropic(model=MODEL_NAME, temperature=0)
+    llm = ChatAnthropic(model=MODEL_NAME, temperature=0, max_tokens=MAX_TOKENS)
     structured_llm = llm.with_structured_output(FailureReport)
 
     # Read current test file contents so Claude can see the actual code

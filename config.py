@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MODEL_NAME = "claude-sonnet-4-6"
-MAX_TOKENS = 8192
+MAX_TOKENS = 2048
 MAX_RETRIES = 3
 GENERATED_TESTS_DIR = Path("generated")
 TESTPLAN_DIR = Path("testplan")

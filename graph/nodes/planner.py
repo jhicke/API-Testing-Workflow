@@ -4,7 +4,7 @@ from typing import Literal
 from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel
 
-from config import BASE_API_URL, MODEL_NAME, REPORTS_DIR, TESTPLAN_DIR
+from config import BASE_API_URL, MAX_TOKENS, MODEL_NAME, REPORTS_DIR, TESTPLAN_DIR
 from graph.state import QAState
 
 PLAN_CACHE_FILE = TESTPLAN_DIR / ".cache.json"
@@ -33,7 +33,9 @@ class TestPlan(BaseModel):
 def _write_plan_to_run_dir(plan: list, run_id: str) -> None:
     run_dir = REPORTS_DIR / f"run_{run_id}"
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "test_plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+    (run_dir / "test_plan.json").write_text(
+        json.dumps(plan, indent=2), encoding="utf-8"
+    )
 
 
 def planner(state: QAState) -> dict:
@@ -51,7 +53,7 @@ def planner(state: QAState) -> dict:
             _write_plan_to_run_dir(plan, state["run_id"])
             return {"plan": plan}
 
-    llm = ChatAnthropic(model=MODEL_NAME, temperature=0)
+    llm = ChatAnthropic(model=MODEL_NAME, temperature=0, max_tokens=MAX_TOKENS)
     structured_llm = llm.with_structured_output(TestPlan)
 
     spec = state["spec"]
@@ -70,7 +72,7 @@ def planner(state: QAState) -> dict:
         indent=2,
     )
 
-    prompt = f"""You are a QA engineer creating a test plan for a REST API.
+    prompt = f"""You are a QA engineer creating a minimal test plan for a REST API.
 
 API: {spec['title']}
 Base URL: {BASE_API_URL}
@@ -78,18 +80,16 @@ Base URL: {BASE_API_URL}
 Endpoints:
 {endpoints_json}
 
-Create a comprehensive test plan. For each endpoint generate test cases covering:
-1. happy_path — valid inputs, expected success response
-2. not_found — request a non-existent resource (use ID 99999), expect 404
-3. invalid_input — missing required fields or wrong types, expect 4xx
-4. edge_case — boundary values, empty query params, filtering
+Generate at most 5 test cases total. Only include scenarios that apply:
+- GET list → happy_path only
+- GET by ID → happy_path + not_found
+- POST/PUT/PATCH → happy_path with realistic test_data
+- DELETE → happy_path + not_found
 
 Rules:
-- Not every endpoint needs every scenario — use judgement
-- POST/PUT/PATCH must have a happy_path with realistic test_data
-- DELETE must have happy_path and not_found
 - expected_status must match what the spec says the API actually returns
 - test_data should be a dict of values to send (empty dict if none needed)
+- Each endpoint includes a "testIds" field. If present, use testIds.valid for happy_path and testIds.invalid for not_found. If absent, fall back to ID 1 for valid and 99999 for invalid.
 """
 
     try:
@@ -107,4 +107,4 @@ Rules:
         _write_plan_to_run_dir(plan, state["run_id"])
         return {"plan": plan}
     except Exception as e:
-        return {"error": f"test_planner failed: {e}"}
+        return {"error": f"planner failed: {e}"}

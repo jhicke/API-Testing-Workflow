@@ -80,6 +80,7 @@ def spec_parser(state: QAState) -> dict:
 
     endpoints = []
     for path, path_item in raw.get("paths", {}).items():
+        test_ids = path_item.get("x-test-ids", {})
         for method, operation in path_item.items():
             if method in ("get", "post", "put", "patch", "delete"):
                 endpoints.append({
@@ -91,6 +92,7 @@ def spec_parser(state: QAState) -> dict:
                     "requestBody": _resolve_refs(operation.get("requestBody", {}), raw),
                     "responses": _resolve_refs(operation.get("responses", {}), raw),
                     "tags": operation.get("tags", []),
+                    "testIds": test_ids,
                 })
 
     return {

@@ -207,7 +207,7 @@ assert on returned state keys and on what `route_*` functions decide — never o
   plain dicts, no mocking needed at all
 
 **Not every node needs a mock.** Only the LLM nodes do — `planner`, `generator`,
-`failure_analyzer`, `fix_suggester`. `spec_parser`, `test_runner`, and `report_writer`
+`failure_analyzer`, `fix_suggester`. `spec_parser`, `runner`, and `report_writer`
 are deterministic, so they're tested with plain fixtures (a sample spec, a fake pytest
 JSON report) and **no mock at all**.
 
