@@ -76,6 +76,19 @@ spec_parser       reads and parses the OpenAPI spec file
 
 The self-healing loop retries up to `MAX_RETRIES` times (default 3). Only `test_bug` failures are auto-fixed — `spec_bug` and `backend_bug` are reported as findings.
 
+Graph 
+ spec_parser ──→ test_planner ──→ test_generator ──→ test_runner
+                                                         │
+                                                    any failures?
+                                                    ┌────┴─────┐
+                                                   yes        no
+                                                    ↓          ↓
+                                           failure_analyzer  report_writer
+                                                    ↓
+                                            fix_suggester
+                                                    ↓
+                                            test_runner  (loop, up to 3x)
+
 ---
 
 ## Testing a different API
