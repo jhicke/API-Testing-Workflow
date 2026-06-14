@@ -79,8 +79,6 @@ paths:
       responses:
         "200":
           description: The updated post
-        "500":
-          description: Post not found — JSONPlaceholder returns 500 for nonexistent IDs
     patch:
       operationId: patchPost
       summary: Partially update a post
