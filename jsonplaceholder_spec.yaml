@@ -1,0 +1,248 @@
+openapi: "3.0.0"
+info:
+  title: JSONPlaceholder API
+  version: "1.0.0"
+  description: Fake REST API for testing and prototyping
+
+servers:
+  - url: https://jsonplaceholder.typicode.com
+
+paths:
+  /posts:
+    get:
+      operationId: listPosts
+      summary: Get all posts
+      tags: [posts]
+      responses:
+        "200":
+          description: Array of all posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+    post:
+      operationId: createPost
+      summary: Create a new post
+      tags: [posts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewPost"
+      responses:
+        "201":
+          description: The created post with assigned id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+
+  /posts/{id}:
+    get:
+      operationId: getPost
+      summary: Get a single post by ID
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post not found
+    put:
+      operationId: replacePost
+      summary: Replace a post entirely
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewPost"
+      responses:
+        "200":
+          description: The updated post
+    patch:
+      operationId: patchPost
+      summary: Partially update a post
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+      responses:
+        "200":
+          description: The updated post
+    delete:
+      operationId: deletePost
+      summary: Delete a post
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Empty object confirming deletion
+
+  /users:
+    get:
+      operationId: listUsers
+      summary: Get all users
+      tags: [users]
+      responses:
+        "200":
+          description: Array of all users
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      summary: Get a single user by ID
+      tags: [users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A user
+        "404":
+          description: User not found
+
+  /todos:
+    get:
+      operationId: listTodos
+      summary: Get all todos
+      tags: [todos]
+      responses:
+        "200":
+          description: Array of all todos
+
+  /todos/{id}:
+    get:
+      operationId: getTodo
+      summary: Get a single todo by ID
+      tags: [todos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A todo
+        "404":
+          description: Todo not found
+
+  /comments:
+    get:
+      operationId: listComments
+      summary: Get all comments, optionally filtered by post
+      tags: [comments]
+      parameters:
+        - name: postId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter comments by post ID
+      responses:
+        "200":
+          description: Array of comments
+
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+
+    NewPost:
+      type: object
+      required: [title, body, userId]
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        userId:
+          type: integer
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        completed:
+          type: boolean
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        postId:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        body:
+          type: string

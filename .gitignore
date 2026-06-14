@@ -1,0 +1,12 @@
+tests/test_*.py
+tests/__init__.py
+tests/.cache.json
+tests/pytest_report.json
+reports/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+*.egg-info/
+.venv/
+venv/
