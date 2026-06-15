@@ -1,0 +1,29 @@
+[
+  {
+    "input": {
+      "failures": [
+        {
+          "test_name": "generated/test_todos.py::test_get_todo_not_found",
+          "failure_type": "test_bug",
+          "file_path": "generated/test_todos.py",
+          "message": "assert 404 == 405",
+          "reason": "The test asserts that a GET request for a non-existent todo ID (99999) should return HTTP 405 (Method Not Allowed). This is incorrect — 405 means the HTTP method is not allowed on the endpoint, not that a resource was not found. The correct status code for a missing resource is 404 (Not Found), which is exactly what the API returned.",
+          "suggested_fix": "Change line 60 from `assert response.status_code == 405` to `assert response.status_code == 404`. Also update the docstring which incorrectly states 'expect a 405 response' — it should say 'expect a 404 response'."
+        }
+      ],
+      "tests": ["generated/test_todos.py"],
+      "retry_count": 0
+    },
+    "output": {
+      "fixes": [
+        {
+          "retry": 1,
+          "filename": "test_todos.py",
+          "changes": "Fixed test_get_todo_not_found: updated the docstring from 'expect a 405 response' to 'expect a 404 response', and changed the status code assertion on line 60 from `assert response.status_code == 405` to `assert response.status_code == 404`."
+        }
+      ],
+      "retry_count": 1
+    },
+    "expected": "Fix should change the status code assertion from 405 to 404 and update the docstring. No other tests should be modified. retry_count should increment to 1."
+  }
+]

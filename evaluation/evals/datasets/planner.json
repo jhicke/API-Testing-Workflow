@@ -1,0 +1,56 @@
+[
+  {
+    "input": {
+      "spec_title": "JSONPlaceholder API",
+      "endpoints": [
+        {
+          "path": "/todos",
+          "method": "GET",
+          "summary": "Get all todos",
+          "parameters": [],
+          "requestBody": {},
+          "responses": { "200": { "description": "Array of all todos" } },
+          "testIds": {}
+        },
+        {
+          "path": "/todos/{id}",
+          "method": "GET",
+          "summary": "Get a single todo by ID",
+          "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+          "requestBody": {},
+          "responses": { "200": { "description": "A todo" }, "404": { "description": "Todo not found" } },
+          "testIds": { "valid": 1, "invalid": 99999 }
+        }
+      ]
+    },
+    "output": {
+      "plan": [
+        {
+          "endpoint_path": "/todos",
+          "method": "GET",
+          "scenario": "happy_path",
+          "description": "Retrieve all todos and expect a 200 response with an array of todos.",
+          "expected_status": 200,
+          "test_data": {}
+        },
+        {
+          "endpoint_path": "/todos/1",
+          "method": "GET",
+          "scenario": "happy_path",
+          "description": "Retrieve a single todo by a valid ID (1) and expect a 200 response with the todo object.",
+          "expected_status": 200,
+          "test_data": { "id": 1 }
+        },
+        {
+          "endpoint_path": "/todos/99999",
+          "method": "GET",
+          "scenario": "not_found",
+          "description": "Attempt to retrieve a todo with a non-existent ID (99999) and expect a 404 response.",
+          "expected_status": 404,
+          "test_data": { "id": 99999 }
+        }
+      ]
+    },
+    "expected": "Plan covers both endpoints. GET /todos has happy_path only. GET /todos/{id} has happy_path using valid ID 1 and not_found using invalid ID 99999. Expected status codes match the spec — 200 for valid, 404 for not found."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "input": {
+      "failure": {
+        "test_name": "generated/test_todos.py::test_get_todo_not_found",
+        "file_path": "generated/test_todos.py",
+        "message": "generated\\test_todos.py:60: in test_get_todo_not_found\n    assert response.status_code == 405, (\nE   AssertionError: Expected status 405, got 404\nE   assert 404 == 405\nE    +  where 404 = <Response [404]>.status_code"
+      }
+    },
+    "output": {
+      "failures": [
+        {
+          "test_name": "generated/test_todos.py::test_get_todo_not_found",
+          "failure_type": "test_bug",
+          "reason": "The test asserts that a GET request for a non-existent todo ID (99999) should return HTTP 405 (Method Not Allowed). This is incorrect — 405 means the HTTP method is not allowed on the endpoint, not that a resource was not found. The correct status code for a missing resource is 404 (Not Found), which is exactly what the API returned. The expected status code in the assertion on line 60 is simply wrong.",
+          "suggested_fix": "Change line 60 from `assert response.status_code == 405` to `assert response.status_code == 404`. Also update the docstring which incorrectly states 'expect a 405 response' — it should say 'expect a 404 response'."
+        }
+      ]
+    },
+    "expected": "Classification should be test_bug. The test expected 405 which is wrong — 405 means method not allowed, not resource not found. The correct status is 404. Reason should explain this distinction and suggested_fix should point to the specific line."
+  }
+]

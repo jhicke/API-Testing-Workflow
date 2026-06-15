@@ -17,7 +17,7 @@ def _load_plan_cache() -> dict:
     return {}
 
 
-class TestCase(BaseModel):
+class PlanCase(BaseModel):
     endpoint_path: str
     method: str
     scenario: Literal["happy_path", "not_found", "invalid_input", "edge_case"]
@@ -26,8 +26,8 @@ class TestCase(BaseModel):
     test_data: dict
 
 
-class TestPlan(BaseModel):
-    cases: list[TestCase]
+class Plan(BaseModel):
+    cases: list[PlanCase]
 
 
 def _write_plan_to_run_dir(plan: list, run_id: str) -> None:
@@ -54,7 +54,7 @@ def planner(state: QAState) -> dict:
             return {"plan": plan}
 
     llm = ChatAnthropic(model=MODEL_NAME, temperature=0, max_tokens=MAX_TOKENS)
-    structured_llm = llm.with_structured_output(TestPlan)
+    structured_llm = llm.with_structured_output(Plan)
 
     spec = state["spec"]
     endpoints_json = json.dumps(

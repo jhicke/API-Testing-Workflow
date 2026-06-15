@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+testpaths = ["evaluation"]
+pythonpath = ["."]
+addopts = ["-m", "not eval"]
+markers = [
+    "eval: live LLM-as-judge evals (slow, non-deterministic; run with -m eval)",
+]
